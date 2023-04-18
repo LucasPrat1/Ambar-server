@@ -3,7 +3,6 @@ import productsControllers from '../controllers/products.js';
 
 const productRouter = express.Router();
 
-//   .put('/:id', projectsValidation.validateUpdate, projectsController.updateProject)
 productRouter
   .put('/:id', productsControllers.updateProduct)
   .delete('/:id', productsControllers.deleteProduct)

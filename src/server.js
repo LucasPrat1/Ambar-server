@@ -3,7 +3,7 @@ import cors from 'cors';
 // import data from './data.js';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv'
-import productRouter from './routes/productRoutes.js';
+import router from './routes/index.js';
 
 dotenv.config();
 
@@ -19,7 +19,7 @@ app.get('/api', async (req, res) => {
   res.send('Hello world');
 });
 
-app.use('/api/products', productRouter)
+app.use('/api', router)
 
 mongoose.connect(process.env.MONGODB_URI).then(() => {
   console.log('Connected to DB successfully');
