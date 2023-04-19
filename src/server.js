@@ -21,6 +21,10 @@ app.get('/api', async (req, res) => {
 
 app.use('/api', router)
 
+app.use((err,req,res,next) => {
+  res.status(500).send({ message: err.message});
+});
+
 mongoose.connect(process.env.MONGODB_URI).then(() => {
   console.log('Connected to DB successfully');
   app.listen(port, () => {

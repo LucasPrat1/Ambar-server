@@ -1,5 +1,6 @@
 import express from 'express';
 import usersControllers from '../controllers/users.js';
+import authMiddleware from '../middlewares/authMiddleware.js';
 
 const userRouter = express.Router();
 
@@ -9,6 +10,6 @@ userRouter
   .put('/:id', usersControllers.editUser)
   .delete('/:id', usersControllers.deleteUser)
   .post('/register', usersControllers.register)
-  .get('/', usersControllers.getAuth);
+  .get('/', authMiddleware.verifyToken , usersControllers.getAuth);
 
 export default userRouter;

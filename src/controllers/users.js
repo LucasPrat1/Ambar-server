@@ -7,7 +7,7 @@ const getAllUsers = async (req, res) => {
     const allUsers = await User.find({});
 
     return res.status(200).json({
-      message: 'All Users successfully shown',
+      message: 'All Users successfully found',
       data: allUsers,
       error: false,
     });
@@ -140,11 +140,11 @@ const deleteUser = async (req, res) => {
 
 const getAuth = async (req, res) => {
   try {
-    const user = await getAuth().getUser(req.headers.firebaseUid);
+    const user = await User.findOne({ firebaseUid: req.headers.firebaseUid });
     if (user) {
       return res.status(201).json({
         message: 'User found',
-        data: user.toJSON(),
+        data: user,
         error: false,
       });
     }
