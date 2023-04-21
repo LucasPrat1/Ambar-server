@@ -5,7 +5,6 @@ import { authFirebaseApp } from '../firebase/index.js';
 const getAllUsers = async (req, res) => {
   try {
     const allUsers = await User.find({});
-
     return res.status(200).json({
       message: 'All Users successfully found',
       data: allUsers,
