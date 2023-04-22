@@ -83,6 +83,7 @@ const editUser = async (req, res) => {
       {
         name: req.body.name,
         email: req.body.email,
+        phone: req.body.phone,
         isAdmin: req.body.isAdmin,
       },
       { new: true },
@@ -117,14 +118,15 @@ const deleteUser = async (req, res) => {
         error: true,
       });
     }
-    const result = await User.findByIdAndDelete(req.params.id);
-    if (!result) {
+    const userDeleted = await User.findByIdAndDelete(req.params.id);
+    if (!userDeleted) {
       return res.status(404).json({
         message: 'User not found',
         data: undefined,
         error: true,
       });
     }
+    await authFirebaseApp.deleteUser(userDeleted.firebaseUid);
     return res.status(204).json();
   } catch (error) {
     return res.json(400).json({
@@ -174,8 +176,9 @@ const register = async (req, res) => {
     const newUser = await User.create({
       firebaseUid: newFirebaseUser.uid,
       name: req.body.name,
+      phone: req.body.phone,
       email: req.body.email,
-      isAdmin: req.body.isAdmin,
+      isAdmin: false,
     });
     return res.status(201).json({
       message: 'User has been created',
