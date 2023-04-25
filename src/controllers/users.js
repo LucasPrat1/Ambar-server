@@ -50,24 +50,6 @@ const getUserById = async (req, res) => {
   }
 };
 
-// const createUser = async (req, res) => {
-//   try {
-//     const oneUser = req.body;
-//     const newUser = await User.create(oneUser);
-//     return res.status(201).json({
-//       message: 'User created',
-//       data: newUser,
-//       error: false,
-//     });
-//   } catch (error) {
-//     return res.status(400).json({
-//       message: error.message,
-//       data: undefined,
-//       error: true,
-//     });
-//   }
-// };
-
 const editUser = async (req, res) => {
   try {
     if (!req.params) {
@@ -84,6 +66,8 @@ const editUser = async (req, res) => {
         name: req.body.name,
         email: req.body.email,
         phone: req.body.phone,
+        city: req.body.city,
+        address: req.body.address,
         isAdmin: req.body.isAdmin,
       },
       { new: true },
@@ -178,6 +162,8 @@ const register = async (req, res) => {
       name: req.body.name,
       phone: req.body.phone,
       email: req.body.email,
+      city: req.body.city,
+      address: req.body.address,
       isAdmin: false,
     });
     return res.status(201).json({
@@ -201,7 +187,6 @@ const register = async (req, res) => {
 export default {
   getAllUsers,
   getUserById,
-  // createUser,
   editUser,
   deleteUser,
   getAuth,
