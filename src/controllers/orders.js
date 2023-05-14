@@ -1,12 +1,12 @@
-import Product from '../models/productModel.js';
+import orderModel from '../models/orderModel.js';
 
-const createProduct = async (req, res) => {
+const createOrder = async (req, res) => {
   try {
-    const newProduct = await new Product(req.body);
-    const product = await newProduct.save();
+    const newOrder = await new orderModel(req.body);
+    const order = await newOrder.save();
     return res.status(201).json({
-      message: 'Product created',
-      data: product,
+      message: 'Order created',
+      data: order,
       error: false,
     });
   } catch (error) {
@@ -18,12 +18,12 @@ const createProduct = async (req, res) => {
   }
 };
 
-const getAllProducts = async (req, res) => {
+const getAllOrders = async (req, res) => {
   try {
-    const allProducts = await Product.find({});
+    const allOrders = await orderModel.find({}).populate('user').populate('items.product');
     return res.status(200).json({
-      message: 'Products found',
-      data: allProducts,
+      message: 'Orders found',
+      data: allOrders,
       error: false,
     });
   } catch (error) {
@@ -35,20 +35,20 @@ const getAllProducts = async (req, res) => {
   }
 };
 
-const getProductById = async (req, res) => {
+const getOrderById = async (req, res) => {
   try {
     if (req.params.id) {
-      const product = await Product.findById(req.params.id);
-      if (!product) {
+      const order = await orderModel.findById(req.params.id).populate('user').populate('items.product');
+      if (!order) {
         return res.status(404).json({
-          message: 'Product not found',
+          message: 'Order not found',
           data: undefined,
           error: true,
         });
       }
       return res.status(200).json({
-        message: 'Product found',
-        data: product,
+        message: 'Order found',
+        data: order,
         error: false,
       });
     }
@@ -66,29 +66,29 @@ const getProductById = async (req, res) => {
   }
 };
 
-const updateProduct = async (req, res) => {
+const updateOrder = async (req, res) => {
   try {
-    const result = await Product.findByIdAndUpdate(
+    const result = await orderModel.findByIdAndUpdate(
       req.params.id,
       req.body,
       { new: true },
-    );
+    ).populate('user').populate('items.product');
     if (!req.params) {
       return res.status(404).json({
         message: 'Invalid params',
-        data: req.params.id,
+        data: req.params,
         error: true,
       });
     }
     if (!result) {
       return res.status(404).json({
-        message: 'Product not found',
+        message: 'Order not found',
         data: undefined,
         error: true,
       });
     }
     return res.status(200).json({
-      message: 'Product has been successfully updated',
+      message: 'Order has been successfully updated',
       data: result,
       error: false,
     });
@@ -101,12 +101,12 @@ const updateProduct = async (req, res) => {
   }
 };
 
-const deleteProduct = async (req, res) => {
+const deleteOrder = async (req, res) => {
   try {
-    const ProductId = await Product.findByIdAndDelete(req.params.id);
-    if (!ProductId) {
+    const result = await orderModel.findByIdAndDelete(req.params.id);
+    if (!result) {
       return res.status(404).json({
-        message: 'Product not found',
+        message: 'Order not found',
         data: undefined,
         error: true,
       });
@@ -122,9 +122,9 @@ const deleteProduct = async (req, res) => {
 };
 
 export default {
-  createProduct,
-  getAllProducts,
-  getProductById,
-  updateProduct,
-  deleteProduct,
+  createOrder,
+  getAllOrders,
+  getOrderById,
+  updateOrder,
+  deleteOrder,
 };
