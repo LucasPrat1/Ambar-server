@@ -1,5 +1,6 @@
 import User from '../models/userModel.js';
-// import * as admin from 'firebase-admin';
+import { transporter } from '../mailer/index.js';
+import mailGenerator from '../mailer/index.js'
 import { authFirebaseApp } from '../firebase/index.js';
 
 const getAllUsers = async (req, res) => {
@@ -79,6 +80,10 @@ const editUser = async (req, res) => {
         error: true,
       });
     }
+
+    const mail = await mailGenerator('editUser', result)
+    const resp = await transporter.sendMail(mail)
+
     return res.status(200).json({
       message: 'User updated',
       data: result,
@@ -166,6 +171,10 @@ const register = async (req, res) => {
       address: req.body.address,
       isAdmin: false,
     });
+
+    const mail = await mailGenerator('register',newUser)
+    const resp = await transporter.sendMail(mail)
+
     return res.status(201).json({
       message: 'User has been created',
       data: newUser,
@@ -183,6 +192,26 @@ const register = async (req, res) => {
   }
 };
 
+const contact = async (req, res) => {
+  try {
+    // to do: save contact message in DB
+    const mail = await mailGenerator('contact',req.body)
+    const resp = await transporter.sendMail(mail)
+
+    return res.status(200).json({
+      message: 'Message sent successfully ',
+      data: resp.messageId,
+      error: false,
+    });
+  } catch (error) {
+    return res.status(400).json({
+      message: error.message,
+      data: undefined,
+      error: true,
+    });
+  }
+};
+
 
 export default {
   getAllUsers,
@@ -190,5 +219,6 @@ export default {
   editUser,
   deleteUser,
   getAuth,
-  register
+  register,
+  contact
 };

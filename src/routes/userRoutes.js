@@ -6,10 +6,11 @@ const userRouter = express.Router();
 
 userRouter
   .post('/register', usersControllers.register)
+  .post('/contact', usersControllers.contact)
+  .put('/:id', usersControllers.editUser)
   .get('/auth', authMiddleware.verifyToken, usersControllers.getAuth)
   .get('/', usersControllers.getAllUsers)
   .get('/:id', usersControllers.getUserById)
-  .put('/:id', usersControllers.editUser)
   .delete('/:id', usersControllers.deleteUser);
 
 export default userRouter;

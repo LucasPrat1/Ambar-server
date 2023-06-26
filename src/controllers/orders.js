@@ -1,9 +1,15 @@
 import orderModel from '../models/orderModel.js';
+import { transporter } from '../mailer/index.js';
+import mailGenerator from '../mailer/index.js'
 
 const createOrder = async (req, res) => {
   try {
     const newOrder = await new orderModel(req.body);
     const order = await newOrder.save();
+    const mail =  await mailGenerator('createOrder', order)
+    const resp = await transporter.sendMail(mail);
+    console.log('send email: ', resp);
+
     return res.status(201).json({
       message: 'Order created',
       data: order,
