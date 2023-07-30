@@ -1,6 +1,5 @@
 import express from 'express'
 import cors from 'cors';
-// import data from './data.js';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv'
 import router from './routes/index.js';
@@ -11,7 +10,18 @@ const port = process.env.PORT || 5000;
 
 const app = express();
 
-app.use(cors());
+// Permitir acceso desde la URL de la aplicación cliente (reemplaza con tu URL real)
+const allowedOrigins = ['https://ambar-app.vercel.app'];
+app.use(cors({
+  origin: function (origin, callback) {
+    if (allowedOrigins.indexOf(origin) !== -1 || !origin) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  }
+}));
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true  }));
 
@@ -20,11 +30,6 @@ app.get('/api', async (req, res) => {
 });
 
 app.use('/api', router)
-
-// app.use((err,req,res,next) => {
-//   console.log('fallo aca')
-//   res.status(500).send({ message: err.message});
-// });
 
 mongoose.connect(process.env.MONGODB_URI).then(() => {
   console.log('Connected to DB successfully');
