@@ -10,8 +10,8 @@ const port = process.env.PORT || 5000;
 
 const app = express();
 
-// Permitir acceso desde la URL de la aplicación cliente (reemplaza con tu URL real)
-const allowedOrigins = ['https://ambar-app.vercel.app'];
+// Permitir acceso desde la URL de la aplicación y localhost
+const allowedOrigins = ['http://localhost:3000', 'https://ambar-app.vercel.app'];
 app.use(cors({
   origin: function (origin, callback) {
     if (allowedOrigins.indexOf(origin) !== -1 || !origin) {
