@@ -35,7 +35,7 @@ app.get('/api', async (req, res) => {
 
 app.use('/api', router)
 
-app.use('/public/images', express.static(join(CURRENT_DIR, '../uploads')));
+app.use('/public/images', express.static(join(CURRENT_DIR, './uploads')));
 
 mongoose.connect(process.env.MONGODB_URI).then(() => {
   console.log('Connected to DB successfully');
