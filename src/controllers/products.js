@@ -2,7 +2,17 @@ import Product from '../models/productModel.js';
 
 const createProduct = async (req, res) => {
   try {
-    const newProduct = await new Product(req.body);
+    const newProduct = await new Product({
+      name: req.body.name,
+      brand: req.body.brand,
+      category: req.body.category,
+      description: req.body.description,
+      price: req.body.price,
+      stock: req.body.stock,
+      rating: req.body.rating,
+      image: `/images/${req.file.filename}`,
+      status: true,
+    });
     const product = await newProduct.save();
     return res.status(201).json({
       message: 'Product created',

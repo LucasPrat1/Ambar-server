@@ -3,10 +3,14 @@ import cors from 'cors';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv'
 import router from './routes/index.js';
+import { dirname, join } from 'path'
+import { fileURLToPath } from 'url';
 
 dotenv.config();
 
 const port = process.env.PORT || 5000;
+
+const CURRENT_DIR = dirname(fileURLToPath(import.meta.url))
 
 const app = express();
 
@@ -30,6 +34,8 @@ app.get('/api', async (req, res) => {
 });
 
 app.use('/api', router)
+
+app.use('/public/images', express.static(join(CURRENT_DIR, '../uploads')));
 
 mongoose.connect(process.env.MONGODB_URI).then(() => {
   console.log('Connected to DB successfully');
