@@ -38,7 +38,7 @@ const createProduct = async (req, res) => {
       stock: req.body.stock,
       rating: req.body.rating,
       image: imageUrl,
-      status: true,
+      status: req.body.status,
     });
     const product = await newProduct.save();
     return res.status(201).json({
@@ -54,6 +54,88 @@ const createProduct = async (req, res) => {
       error: true,
     });
   }
+};
+
+const updateProduct = async (req, res) => {
+  if (!req.params) {
+    return res.status(404).json({
+      message: 'Invalid params',
+      data: req.params.id,
+      error: true,
+    });
+  }
+  if (req.file) {
+    try {
+      const fileExtension = extname(req.file.originalname);
+      const fileName = `img-${Date.now()}${fileExtension}`;
+
+      const file = bucket.file(fileName);
+      const stream = file.createWriteStream();
+      const resp = stream.end(req.file.buffer);
+      if (resp.error) {
+        return res.status(400).json({
+          message: resp.message,
+          data: undefined,
+          error: true,
+        });
+      }
+      const imageUrl = `https://firebasestorage.googleapis.com/v0/b/${bucket.name}/o/${fileName}?alt=media`;
+      const newProduct = {
+        ...req.body,
+        image: imageUrl
+      };
+
+      const result = await Product.findByIdAndUpdate(
+        req.params.id,
+        newProduct,
+        { new: true },
+      );
+      if (!result) {
+        return res.status(404).json({
+          message: 'Product not found',
+          data: undefined,
+          error: true,
+        });
+      }
+      return res.status(200).json({
+        message: 'Product has been successfully updated',
+        data: result,
+        error: false,
+      });
+    } catch (error) {
+      return res.status(400).json({
+        message: error.message,
+        data: undefined,
+        error: true,
+      });
+    }
+  } else {
+    try {
+      const result = await Product.findByIdAndUpdate(
+        req.params.id,
+        req.body,
+        { new: true },
+      );
+      if (!result) {
+        return res.status(404).json({
+          message: 'Product not found',
+          data: undefined,
+          error: true,
+        });
+      }
+      return res.status(200).json({
+        message: 'Product has been successfully updated',
+        data: result,
+        error: false,
+      });
+    } catch (error) {
+      return res.status(400).json({
+        message: error.message,
+        data: undefined,
+        error: true,
+      });
+    }
+  };
 };
 
 const getAllProducts = async (req, res) => {
@@ -94,41 +176,6 @@ const getProductById = async (req, res) => {
       message: 'Invalid params',
       data: undefined,
       error: true,
-    });
-  } catch (error) {
-    return res.status(400).json({
-      message: error.message,
-      data: undefined,
-      error: true,
-    });
-  }
-};
-
-const updateProduct = async (req, res) => {
-  try {
-    const result = await Product.findByIdAndUpdate(
-      req.params.id,
-      req.body,
-      { new: true },
-    );
-    if (!req.params) {
-      return res.status(404).json({
-        message: 'Invalid params',
-        data: req.params.id,
-        error: true,
-      });
-    }
-    if (!result) {
-      return res.status(404).json({
-        message: 'Product not found',
-        data: undefined,
-        error: true,
-      });
-    }
-    return res.status(200).json({
-      message: 'Product has been successfully updated',
-      data: result,
-      error: false,
     });
   } catch (error) {
     return res.status(400).json({

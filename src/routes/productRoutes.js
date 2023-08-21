@@ -7,7 +7,7 @@ const productRouter = express.Router();
 productRouter
   .get('/', productsControllers.getAllProducts)
   .post('/', multerUpload.single('image') , productsControllers.createProduct)
-  .put('/:id', productsControllers.updateProduct)
+  .put('/:id', multerUpload.single('image') , productsControllers.updateProduct)
   .delete('/:id', productsControllers.deleteProduct)
   .get('/:id', productsControllers.getProductById);
 
