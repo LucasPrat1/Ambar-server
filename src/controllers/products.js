@@ -1,8 +1,41 @@
 import Product from '../models/productModel.js';
+import { bucket } from '../firebase/index.js';
+import { extname } from 'path'
 
 const createProduct = async (req, res) => {
   try {
-    const newProduct = await new Product({
+    if (!req.file) {
+      return res.status(404).json({
+        message: 'image not found',
+        data: undefined,
+        error: true,
+      });
+    }
+
+    const fileExtension = extname(req.file.originalname);
+    const fileName = `img-${Date.now()}${fileExtension}`;
+
+    const file = bucket.file(fileName);
+    const stream = file.createWriteStream();
+    const resp = stream.end(req.file.buffer);
+
+    // Obtener la URL de la imagen recién subida
+    const [url] = await file.getSignedUrl({
+      action: 'read',
+      expires: Date.now() + 30 * 60 * 1000 // 30 minutes
+    });
+
+    console.log('url', url)
+
+    if (resp.error) {
+      return res.status(400).json({
+        message: resp.message,
+        data: undefined,
+        error: true,
+      });
+    }
+
+    const newProduct = new Product({
       name: req.body.name,
       brand: req.body.brand,
       category: req.body.category,
@@ -10,7 +43,7 @@ const createProduct = async (req, res) => {
       price: req.body.price,
       stock: req.body.stock,
       rating: req.body.rating,
-      image: `/images/${req.file.filename}`,
+      image: url,
       status: true,
     });
     const product = await newProduct.save();
@@ -19,6 +52,7 @@ const createProduct = async (req, res) => {
       data: product,
       error: false,
     });
+
   } catch (error) {
     return res.status(400).json({
       message: error.message,
