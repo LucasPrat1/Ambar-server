@@ -19,13 +19,7 @@ const createProduct = async (req, res) => {
     const stream = file.createWriteStream();
     const resp = stream.end(req.file.buffer);
 
-    // Obtener la URL de la imagen recién subida
-    const [url] = await file.getSignedUrl({
-      action: 'read',
-      expires: Date.now() + 30 * 60 * 1000 // 30 minutes
-    });
-
-    console.log('url', url)
+    const imageUrl = `https://firebasestorage.googleapis.com/v0/b/${bucket.name}/o/${fileName}?alt=media`;
 
     if (resp.error) {
       return res.status(400).json({
@@ -43,7 +37,7 @@ const createProduct = async (req, res) => {
       price: req.body.price,
       stock: req.body.stock,
       rating: req.body.rating,
-      image: url,
+      image: imageUrl,
       status: true,
     });
     const product = await newProduct.save();
